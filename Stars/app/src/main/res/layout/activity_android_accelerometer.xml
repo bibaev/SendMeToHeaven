@@ -9,13 +9,30 @@
     android:paddingTop="20dp"
     android:weightSum="1">
 
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="83dp"
+        android:orientation="horizontal">
+        <EditText android:id="@+id/edit_message"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/edit_message" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_send"
+            android:onClick="sendMessage" />
+    </LinearLayout>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginBottom="10dp"
-        android:text="Max Acceleration:"
-        android:textSize="20dp" />
+        android:text="SEND ME TO HEAVEN"
+        android:textSize="30dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -84,57 +101,6 @@
         android:gravity="center|top"
         android:orientation="horizontal" >
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.33"
-            android:background="#ffffff"
-            android:gravity="center"
-            android:orientation="vertical" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:text="X-Axis"
-                android:textSize="15dp" />
-
-            <TextView
-                android:id="@+id/currentX"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:text="0.0"
-                android:textSize="15dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.33"
-            android:background="#ffffff"
-            android:gravity="center"
-            android:orientation="vertical" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:text="Y-Axis"
-                android:textSize="15dp" />
-
-            <TextView
-                android:id="@+id/currentY"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:text="0.0"
-                android:textSize="15dp" />
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"

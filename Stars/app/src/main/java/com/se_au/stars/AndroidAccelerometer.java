@@ -2,18 +2,21 @@ package com.se_au.stars;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.se_au.stars.R;
 
 public class AndroidAccelerometer extends Activity implements SensorEventListener {
-
+    public final static String EXTRA_MESSAGE = "com.se_au.stars.MESSAGE";
     private float lastX, lastY, lastZ;
 
     // public abstract Point getPoint();
@@ -58,8 +61,8 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
     }
 
     public void initializeViews() {
-        currentX = (TextView) findViewById(R.id.currentX);
-        currentY = (TextView) findViewById(R.id.currentY);
+//        currentX = (TextView) findViewById(R.id.currentX);
+//        currentY = (TextView) findViewById(R.id.currentY);
         currentZ = (TextView) findViewById(R.id.currentZ);
 
         maxX = (TextView) findViewById(R.id.maxX);
@@ -117,15 +120,15 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
     }
 
     public void displayCleanValues() {
-        currentX.setText("0.0");
-        currentY.setText("0.0");
+//        currentX.setText("0.0");
+//        currentY.setText("0.0");
         currentZ.setText("0.0");
     }
 
     // display the current x,y,z accelerometer values
     public void displayCurrentValues() {
-        currentX.setText(Float.toString(deltaX));
-        currentY.setText(Float.toString(deltaY));
+//        currentX.setText(Float.toString(deltaX));
+//        currentY.setText(Float.toString(deltaY));
         currentZ.setText(Float.toString(deltaZ));
     }
 
@@ -144,30 +147,14 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
             maxZ.setText(Float.toString(deltaZMax));
         }
     }
+
+    /** Called when the user clicks the Send button */
+    public void sendMessage(View view) {
+        Intent intent = new Intent(this, DisplayMessageActivity.class);
+        EditText editText = (EditText) findViewById(R.id.edit_message);
+        String message = editText.getText().toString();
+        intent.putExtra(EXTRA_MESSAGE, message);
+        startActivity(intent);
+    }
 }
 
-//public class Point {
-//    private float x = 0;
-//    private float y = 0;
-//    private float z = 0;
-//    private int cnt = 1;
-//
-//    public float getX() {
-//        return x / (float) cnt;
-//    }
-//
-//    public float getY() {
-//        return y / (float) cnt;
-//    }
-//
-//    public float getZ() {
-//        return z / (float) cnt;
-//    }
-//
-//    public Point(float x, float y, float z, int cnt) {
-//        this.x = x;
-//        this.y = y;
-//        this.z = z;
-//        this.cnt = cnt;
-//    }
-//}
