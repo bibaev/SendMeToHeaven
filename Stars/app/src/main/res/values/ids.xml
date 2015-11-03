@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_id">907143664729</string>
+    <string name="package_name">com.se_au.stars</string>
+    <string name="achievement_did_you_break_your_phone_yet">CgkI2ajnr7MaEAIQAg</string>
+    <string name="achievement_usain_bolt">CgkI2ajnr7MaEAIQAw</string>
+    <string name="achievement_are_you_crazy">CgkI2ajnr7MaEAIQBA</string>
+    <string name="achievement_start_small">CgkI2ajnr7MaEAIQBQ</string>
+    <string name="achievement_welcome_to_the_club">CgkI2ajnr7MaEAIQBg</string>
+    <string name="leaderboard_champions_of_the_world">CgkI2ajnr7MaEAIQAQ</string>
+</resources>
