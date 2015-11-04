@@ -19,7 +19,7 @@ public class LeaderboardsProvider {
         return mGlobalLeaderboardId;
     }
 
-    public void Submit(float result){
+    public void Submit(double result){
         if(!mGoogleApiClient.isConnected()){
             return;
         }

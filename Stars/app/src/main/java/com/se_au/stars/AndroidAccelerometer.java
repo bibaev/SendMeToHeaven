@@ -151,33 +151,33 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
 
         double lin_acc = 0;
         double norm = 0;
+        double maxH;
         for (int i = 0; i < 3; ++i) {
             norm += gravity[i]*gravity[i];
         }
         norm = Math.sqrt(norm);
 
         for (int i = 0; i < 3; ++i) {
-            lin_acc += linear_acceleration[i] * gravity[0] / norm;
+            lin_acc += linear_acceleration[i] * gravity[i] / norm;
         }
 
         if (Math.abs(lin_acc) > 5)
         {
             if (start) {
                 timestamp = System.currentTimeMillis();
-                v0 = lin_acc;
+                v0 = lin_acc * 0.1;
                 start = false;
             } else {
-                long timeDelta = (System.currentTimeMillis() - timestamp) / 2;
-                maxZ.setText(Double.toString(getMaxHeight(v0, timeDelta)));
                 start = true;
-            }
-        }
+                long timeDelta = (System.currentTimeMillis() - timestamp) / 2;
+                maxH = getMaxHeight(v0, timeDelta);
+                maxZ.setText(Double.toString(maxH));
+                sensorManager.unregisterListener(this);
+                mAchievementsProvider.Submit(maxH);
+                mLeaderboardsProvider.Submit(maxH);
+                lin_acc = 0;
 
-        float result = 2.0f;
-        if(isGameComplete){
-            sensorManager.unregisterListener(this);
-            mAchievementsProvider.Submit(result);
-            mLeaderboardsProvider.Submit(result);
+            }
         }
     }
 
@@ -186,8 +186,8 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         final double g = 9.81f;
 
         Float time = timeDelta / 2000f;
-        double vel = v0 * time;
-        return vel * vel / 2 * g;
+//        double vel = v0 * time;
+        return v0 * v0 / 2 * g;
     }
 
     public void displayCleanValues() {
@@ -207,6 +207,10 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         }
     }
     public void reset(View v) {
+        for (int i = 0; i < 3; ++i) {
+            linear_acceleration[i] = 0;
+            gravity[i] = 0;
+        }
         isGameComplete = false;
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         deltaZMax = 0.0f;
