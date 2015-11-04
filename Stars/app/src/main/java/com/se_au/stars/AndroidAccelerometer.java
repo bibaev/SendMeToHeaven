@@ -24,6 +24,11 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     public final static String EXTRA_MESSAGE = "com.se_au.stars.MESSAGE";
 
+    private static String LOG_INFO = "INFO";
+    private static String LOG_WARN = "WARN";
+    private static String LOG_ERROR = "ERROR";
+    private static String LOG_FATAL = "FATAL";
+
     // Fragments
 //    WinFragment mWinFragment;
     private GoogleApiClient mGoogleApiClient;
@@ -78,13 +83,14 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("aaaaaa", "onStart(): connecting");
+        Log.d(LOG_INFO, "in onStart. Call connect()");
         mGoogleApiClient.connect();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        Log.d(LOG_INFO, "in onStop. Call disconnect()");
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
@@ -181,64 +187,62 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
     }
 
     public void showAchievements(View v) {
-        if(mGoogleApiClient.isConnected()) {
+        try{
             startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient), 0);
+        }
+        catch (Exception e){
+            Log.d(LOG_INFO, "Cannot open Achievements");
         }
     }
 
     public void showLeaderboard(View v) {
-        if(mGoogleApiClient.isConnected()) {
-            Log.d("INFO", mLeaderboardsProvider.GetGlobalLeaderboardId());
+        try{
             startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient,
                     mLeaderboardsProvider.GetGlobalLeaderboardId()), 10);
+        }
+        catch (Exception ex){
+            Log.d(LOG_INFO, "Cannot open Leaderboard");
         }
     }
 
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.d("Success!!", "onStop(): disconnecting");
+        Log.d(LOG_INFO, "onStop(): connected");
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Log.d(LOG_WARN, "connection suspend");
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.d("ffffffuuuuuuuuuu", connectionResult.toString());
+        Log.d(LOG_INFO, "Can not connect: " + connectionResult.toString());
 
         try {
+            Log.d(LOG_INFO, "Try auth");
             connectionResult.startResolutionForResult(this, 0);
         } catch (IntentSender.SendIntentException e) {
-            Log.d("ERROR", "Resolution failed");
+            Log.d(LOG_ERROR, "Auth failed");
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-                switch (resultCode) {
-                    case Activity.RESULT_OK:
-                        // All required changes were successfully made
-                        Log.d("INFO", "Result ok");
-                        break;
-                    case Activity.RESULT_CANCELED:
-                        // The user was asked to change settings, but chose not to
-                        Log.d("ERROR", "Result not ok");
-                        break;
-                    default:
-                        break;
-                }
+        switch (resultCode) {
+            case Activity.RESULT_OK:
+                // All required changes were successfully made
+                Log.d(LOG_INFO, "Result ok");
+                break;
+            case Activity.RESULT_CANCELED:
+                // The user was asked to change settings, but chose not to
+                Log.d(LOG_INFO, "Result not ok");
+                break;
+            default:
+                break;
+        }
     }
 }
 
-    /** Called when the user clicks the Send button */
-//    public void sendMessage(View view) {
-//        Intent intent = new Intent(this, DisplayMessageActivity.class);
-//        EditText editText = (EditText) findViewById(R.id.edit_message);
-//        String message = editText.getText().toString();
-//        intent.putExtra(EXTRA_MESSAGE, message);
-//        startActivity(intent);
-//    }
 

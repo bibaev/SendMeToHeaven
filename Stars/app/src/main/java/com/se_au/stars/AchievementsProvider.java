@@ -1,5 +1,7 @@
 package com.se_au.stars;
 
+import android.util.Log;
+
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 
@@ -27,17 +29,24 @@ public class AchievementsProvider {
             return;
         }
 
-        Games.Achievements.increment(mGoogleApiClient, UsainBolt, 1);
-        Games.Achievements.unlock(mGoogleApiClient, StartSmall);
+        try {
+            Games.Achievements.increment(mGoogleApiClient, UsainBolt, 1);
+            Games.Achievements.unlock(mGoogleApiClient, StartSmall);
 
-        if(result >= 1.0){
-            Games.Achievements.unlock(mGoogleApiClient, WelcomeToTheClubId);
-            if(result >= 2.){
-                Games.Achievements.unlock(mGoogleApiClient, BrakePhone);
-                if(result >= 20.){
-                    Games.Achievements.unlock(mGoogleApiClient, AreYouCrazy);
+            if (result >= 1.0) {
+                Games.Achievements.unlock(mGoogleApiClient, WelcomeToTheClubId);
+                if (result >= 2.) {
+                    Games.Achievements.unlock(mGoogleApiClient, BrakePhone);
+                    if (result >= 20.) {
+                        Games.Achievements.unlock(mGoogleApiClient, AreYouCrazy);
+                    }
                 }
             }
+        }
+        catch (Exception e)
+        {
+            Log.d("ERROR", "Achievement send failed.");
+            Log.d("ERROR", e.toString());
         }
     }
 }
