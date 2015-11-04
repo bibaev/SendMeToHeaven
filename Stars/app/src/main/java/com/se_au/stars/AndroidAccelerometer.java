@@ -187,5 +187,5 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
 //        intent.putExtra(EXTRA_MESSAGE, message);
 //        startActivity(intent);
 //    }
-}
+//}
 
