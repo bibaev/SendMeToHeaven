@@ -3,16 +3,29 @@ package com.se_au.stars;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 
-import static android.support.v4.app.ActivityCompat.startActivityForResult;
-
 
 public class LeaderboardsProvider {
-    private String mGlobalLeaderboardId;
     private GoogleApiClient mGoogleApiClient;
+    public String mGlobalLeaderboardId;
 
-    private int REQUEST_LEADERBOARD = 0;
     public LeaderboardsProvider(GoogleApiClient googleApiClient){
         mGoogleApiClient = googleApiClient;
 
+        // TODO: Доставать из ресурсов
+        mGlobalLeaderboardId = "CgkI2ajnr7MaEAIQAQ";
+    }
+
+    public String GetGlobalLeaderboardId(){
+        return mGlobalLeaderboardId;
+    }
+
+    public void Submit(float result){
+        if(!mGoogleApiClient.isConnected()){
+            return;
+        }
+
+        Games.Leaderboards.submitScore(mGoogleApiClient,
+                mGlobalLeaderboardId,
+                (long) (100 * result));
     }
 }
