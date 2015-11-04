@@ -1,5 +1,7 @@
 package com.se_au.stars;
 
+//import java.util.Timer
+import android.view.View;
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -14,24 +16,24 @@ import com.se_au.stars.R;
 
 public class AndroidAccelerometer extends Activity implements SensorEventListener {
 
-    private float lastX, lastY, lastZ;
+    private float lastX, lastY, lastZ, timeUp;
 
     // public abstract Point getPoint();
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
 
-    private float deltaXMax = 0;
-    private float deltaYMax = 0;
+//    private float deltaXMax = 0;
+//    private float deltaYMax = 0;
     private float deltaZMax = 0;
 
-    private float deltaX = 0;
-    private float deltaY = 0;
+//    private float deltaX = 0;
+//    private float deltaY = 0;
     private float deltaZ = 0;
 
     private float vibrateThreshold = 0;
 
-    private TextView currentX, currentY, currentZ, maxX, maxY, maxZ;
+    private TextView currentX, currentY, currentZ, currentHeight, maxX, maxY, maxZ, maxHeight;
 
     public Vibrator v;
 
@@ -52,19 +54,22 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
             // fai! we dont have an accelerometer!
         }
 
+
         //initialize vibration
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
 
     }
 
     public void initializeViews() {
-        currentX = (TextView) findViewById(R.id.currentX);
-        currentY = (TextView) findViewById(R.id.currentY);
+        //currentX = (TextView) findViewById(R.id.currentX);
+        //currentY = (TextView) findViewById(R.id.currentY);
         currentZ = (TextView) findViewById(R.id.currentZ);
-
-        maxX = (TextView) findViewById(R.id.maxX);
-        maxY = (TextView) findViewById(R.id.maxY);
+//        currentHeight = (TextView) findViewById(R.id.currentHeight);
+//
+//        maxX = (TextView) findViewById(R.id.maxX);
+//        maxY = (TextView) findViewById(R.id.maxY);
         maxZ = (TextView) findViewById(R.id.maxZ);
+     //   maxHeight = (TextView) findViewById(R.id.maxHeight);
     }
 
     //onResume() register the accelerometer for listening the events
@@ -88,6 +93,8 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
     public void onSensorChanged(SensorEvent event) {
 
         // clean current values
+        long startTime = System.currentTimeMillis();
+
         displayCleanValues();
         // display the current x,y,z accelerometer values
         displayCurrentValues();
@@ -95,55 +102,78 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         displayMaxValues();
 
         // get the change of the x,y,z values of the accelerometer
-        deltaX = Math.abs(lastX - event.values[0]);
-        deltaY = Math.abs(lastY - event.values[1]);
+//        deltaX = Math.abs(lastX - event.values[0]);
+//        deltaY = Math.abs(lastY - event.values[1]);
         deltaZ = Math.abs(lastZ - event.values[2]);
 
         // if the change is below 2, it is just plain noise
-        if (deltaX < 2)
-            deltaX = 0;
-        if (deltaY < 2)
-            deltaY = 0;
+//        if (deltaX < 2)
+//            deltaX = 0;
+//        if (deltaY < 2)
+//            deltaY = 0;
         if (deltaZ < 2)
             deltaZ = 0;
 
-        lastX = event.values[0];
-        lastY = event.values[1];
+//        lastX = event.values[0];
+//        lastY = event.values[1];
         lastZ = event.values[2];
 
-        if ((deltaX > vibrateThreshold) || (deltaY > vibrateThreshold) || (deltaZ > vibrateThreshold)) {
-            v.vibrate(50);
+//        if ((deltaX > vibrateThreshold) || (deltaY > vibrateThreshold) || (deltaZ > vibrateThreshold)) {
+//            v.vibrate(50);
+//        }
+
+
+        if (deltaZ > 2.5)
+        {
+            long timeUp = System.currentTimeMillis() - startTime;
+            maxZ.setText(Float.toString(getMaxHeight(timeUp/1000f)));
         }
     }
 
+    public float getMaxHeight(float timeUp)
+    {
+        final float g = 9.81f;
+        //v = v0 + a*t; -> v0 = v - a*t, a = -g_z
+        float v0 = g * timeUp;  //
+        float h = v0 * timeUp + g * timeUp * timeUp / 2;
+        return h;
+    }
+
     public void displayCleanValues() {
-        currentX.setText("0.0");
-        currentY.setText("0.0");
+//        currentX.setText("0.0");
+//        currentY.setText("0.0");
         currentZ.setText("0.0");
+      //  currentHeight.setText("0.0");
     }
 
     // display the current x,y,z accelerometer values
     public void displayCurrentValues() {
-        currentX.setText(Float.toString(deltaX));
-        currentY.setText(Float.toString(deltaY));
+//        currentX.setText(Float.toString(deltaX));
+//        currentY.setText(Float.toString(deltaY));
         currentZ.setText(Float.toString(deltaZ));
+        //currentHeight.setText(Float.toString(deltaHeight));
     }
 
     // display the max x,y,z accelerometer values
     public void displayMaxValues() {
-        if (deltaX > deltaXMax) {
-            deltaXMax = deltaX;
-            maxX.setText(Float.toString(deltaXMax));
-        }
-        if (deltaY > deltaYMax) {
-            deltaYMax = deltaY;
-            maxY.setText(Float.toString(deltaYMax));
-        }
+//        if (deltaX > deltaXMax) {
+//            deltaXMax = deltaX;
+//            maxX.setText(Float.toString(deltaXMax));
+//        }
+//        if (deltaY > deltaYMax) {
+//            deltaYMax = deltaY;
+//            maxY.setText(Float.toString(deltaYMax));
+//        }
         if (deltaZ > deltaZMax) {
             deltaZMax = deltaZ;
             maxZ.setText(Float.toString(deltaZMax));
         }
     }
+    public void reset(View v) {
+        deltaZMax = 0.0f;
+        maxZ.setText("0.0");
+    }
+
 }
 
 //public class Point {
