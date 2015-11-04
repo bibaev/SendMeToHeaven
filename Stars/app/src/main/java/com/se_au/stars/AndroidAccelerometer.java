@@ -29,7 +29,7 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
     public final static String EXTRA_MESSAGE = "com.se_au.stars.MESSAGE";
 
     // Fragments
-    WinFragment mWinFragment;
+//    WinFragment mWinFragment;
     private GoogleApiClient mGoogleApiClient;
     private float lastZ;
     private SensorManager sensorManager;
@@ -171,9 +171,15 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         maxZ.setText("0.0");
     }
 
-    public void show_highscore(View v) {}
+    public void showAchievements(View v) {
+        startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient),
+                0);
+    }
 
-    public void show_leaderboard(View v) {}
+    public void showLeaderboard(View v) {
+        startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient,
+                "CgkI2ajnr7MaEAIQAQ"), 0);
+    }
 
 
     @Override
