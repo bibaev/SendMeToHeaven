@@ -179,6 +179,7 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
     @Override
     public void onConnected(Bundle bundle) {
         Log.d("Success!!", "onStop(): disconnecting");
+//        Games.Achievements.unlock(mGoogleApiClient, "CgkI2ajnr7MaEAIQBQ");
     }
 
     @Override
