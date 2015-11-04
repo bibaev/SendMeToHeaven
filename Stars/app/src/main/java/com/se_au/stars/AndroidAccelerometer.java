@@ -1,6 +1,7 @@
 package com.se_au.stars;
 
 //import java.util.Timer
+import android.content.IntentSender;
 import android.util.Log;
 import android.view.View;
 import android.app.Activity;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
+import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.plus.Plus;
 import com.se_au.stars.R;
 
@@ -187,6 +189,28 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d("ffffffuuuuuuuuuu", connectionResult.toString());
+
+        try {
+            connectionResult.startResolutionForResult(this, 0);
+        } catch (IntentSender.SendIntentException e) {
+            Log.d("ERROR", "Resolution failed");
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        // All required changes were successfully made
+                        Log.d("INFO", "Result ok");
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        // The user was asked to change settings, but chose not to
+                        Log.d("ERROR", "Result not ok");
+                        break;
+                    default:
+                        break;
+                }
     }
 }
 
