@@ -41,6 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
+
         android:text="Max Acceleration: X-Axis"
         android:textSize="15dp"
         android:textColor="#E0E4CC" />
@@ -110,7 +111,6 @@
         android:gravity="center|top"
         android:orientation="horizontal" >
 
-
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -147,6 +147,8 @@
         android:id="@+id/button"
         android:layout_gravity="center_horizontal"
         android:textColor="#E0E4CC"
-        android:background="#A7DBD8" />
+        android:background="#A7DBD8"
+        android:onClick="reset"/>
+
 
 </LinearLayout>
