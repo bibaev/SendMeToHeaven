@@ -3,27 +3,86 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:background="#ffffff"
+    android:background="#69D2E7"
     android:gravity="center"
     android:orientation="vertical"
     android:paddingTop="20dp"
-    android:weightSum="1">
+    android:weightSum="1"
+    style="@style/Widget.AppCompat.Light.ListView.DropDown">
+
+    <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+        <!--xmlns:tools="http://schemas.android.com/tools"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="83dp"-->
+        <!--android:orientation="horizontal">-->
+        <!--<EditText android:id="@+id/edit_message"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:hint="@string/edit_message" />-->
+        <!--<Button-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/button_send"-->
+            <!--android:onClick="sendMessage" />-->
+    <!--</LinearLayout>-->
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginBottom="10dp"
-        android:text="Max Acceleration:"
-        android:textSize="20dp" />
+        android:text="SEND ME TO HEAVEN"
+        android:textSize="35dp"
+        android:textColor="#E0E4CC" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
-        android:text="Max Height"
-        android:textSize="15dp" />
+
+        android:text="Max Acceleration: X-Axis"
+        android:textSize="15dp"
+        android:textColor="#E0E4CC" />
+
+    <TextView
+        android:id="@+id/maxX"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:text="0.0"
+        android:textSize="20dp"
+        android:textColor="#E0E4CC" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:text="Max Acceleration: Y-Axis"
+        android:textSize="15dp"
+        android:textColor="#E0E4CC" />
+
+    <TextView
+        android:id="@+id/maxY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:text="0.0"
+        android:textSize="20dp"
+        android:textColor="#E0E4CC" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:text="Max Acceleration: Z-Axis"
+        android:textSize="15dp"
+        android:textColor="#E0E4CC" />
 
     <TextView
         android:id="@+id/maxZ"
@@ -32,7 +91,8 @@
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
         android:text="0.0"
-        android:textSize="20dp" />
+        android:textSize="20dp"
+        android:textColor="#E0E4CC" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -41,12 +101,13 @@
         android:layout_marginBottom="10dp"
         android:layout_marginTop="30dp"
         android:text="Current Acceleration:"
-        android:textSize="20dp" />
+        android:textSize="20dp"
+        android:textColor="#E0E4CC" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="83dp"
-        android:background="#ffffff"
+        android:background="#69D2E7"
         android:gravity="center|top"
         android:orientation="horizontal" >
 
@@ -54,7 +115,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.33"
-            android:background="#ffffff"
+            android:background="#69D2E7"
             android:gravity="center"
             android:orientation="vertical" >
 
@@ -64,7 +125,8 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
                 android:text="Z-Axis"
-                android:textSize="15dp" />
+                android:textSize="15dp"
+                android:textColor="#E0E4CC" />
 
             <TextView
                 android:id="@+id/currentZ"
@@ -73,7 +135,8 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
                 android:text="0.0"
-                android:textSize="15dp" />
+                android:textSize="15dp"
+                android:textColor="#E0E4CC" />
         </LinearLayout>
     </LinearLayout>
 
@@ -83,6 +146,9 @@
         android:text="Throw again!"
         android:id="@+id/button"
         android:layout_gravity="center_horizontal"
+        android:textColor="#E0E4CC"
+        android:background="#A7DBD8"
         android:onClick="reset"/>
+
 
 </LinearLayout>
