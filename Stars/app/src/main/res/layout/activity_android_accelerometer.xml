@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:background="#69D2E7"
+    android:background="#f0f0f0"
     android:gravity="center"
     android:orientation="vertical"
     android:paddingTop="20dp"
@@ -36,51 +36,73 @@
         android:textSize="35dp"
         android:textColor="#031634" />
 
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_marginTop="20dp"-->
+
+        <!--android:text="Max Acceleration: X-Axis"-->
+        <!--android:textSize="15dp"-->
+        <!--android:textColor="#031634" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/maxX"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:text="0.0"-->
+        <!--android:textSize="20dp"-->
+        <!--android:textColor="#031634" />-->
+
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_marginTop="20dp"-->
+        <!--android:text="Max Acceleration: Y-Axis"-->
+        <!--android:textSize="15dp"-->
+        <!--android:textColor="#031634" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/maxY"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:text="0.0"-->
+        <!--android:textSize="20dp"-->
+        <!--android:textColor="#031634" />-->
+
+    <!--<LinearLayout android:id="@+id/sign_in_bar"-->
+        <!--android:layout_height="120dp"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:background="#f0f0f0"-->
+        <!--android:layout_marginTop="30dp"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:gravity="center"-->
+        <!--android:padding="10dp">-->
+
+        <!--<com.google.android.gms.common.SignInButton-->
+            <!--android:id="@+id/sign_in_button"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content" />-->
+
+        <!--<TextView android:layout_width="0dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/sign_in_why"-->
+            <!--android:layout_marginLeft="10dp"-->
+            <!--android:textColor="#808080" />-->
+    <!--</LinearLayout>-->
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
-
-        android:text="Max Acceleration: X-Axis"
-        android:textSize="15dp"
-        android:textColor="#031634" />
-
-    <TextView
-        android:id="@+id/maxX"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="10dp"
-        android:text="0.0"
-        android:textSize="20dp"
-        android:textColor="#031634" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:text="Max Acceleration: Y-Axis"
-        android:textSize="15dp"
-        android:textColor="#031634" />
-
-    <TextView
-        android:id="@+id/maxY"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="10dp"
-        android:text="0.0"
-        android:textSize="20dp"
-        android:textColor="#031634" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:text="Max Acceleration: Z-Axis"
+        android:text="Max height"
         android:textSize="15dp"
         android:textColor="#031634" />
 
@@ -107,7 +129,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="83dp"
-        android:background="#69D2E7"
+        android:background="#f0f0f0"
         android:gravity="center|top"
         android:orientation="horizontal" >
 
@@ -115,7 +137,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.33"
-            android:background="#69D2E7"
+            android:background="#f0f0f0"
             android:gravity="center"
             android:orientation="vertical" >
 
@@ -143,7 +165,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="83dp"
-        android:background="#69D2E7"
+        android:background="#f0f0f0"
         android:orientation="horizontal"
         android:gravity="top|center">
 
