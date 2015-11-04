@@ -1,6 +1,7 @@
 package com.se_au.stars;
 
 //import java.util.Timer
+import android.util.Log;
 import android.view.View;
 import android.app.Activity;
 import android.content.Context;
@@ -15,15 +16,19 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.plus.Plus;
 import com.se_au.stars.R;
 
-public class AndroidAccelerometer extends Activity
-        implements SensorEventListener {
+public class AndroidAccelerometer extends Activity implements SensorEventListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     public final static String EXTRA_MESSAGE = "com.se_au.stars.MESSAGE";
 
     // Fragments
     WinFragment mWinFragment;
-
+    private GoogleApiClient mGoogleApiClient;
     private float lastZ;
     private SensorManager sensorManager;
     private Sensor accelerometer;
@@ -41,6 +46,13 @@ public class AndroidAccelerometer extends Activity
         setContentView(R.layout.activity_android_accelerometer);
         initializeViews();
 
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Plus.API).addScope(Plus.SCOPE_PLUS_LOGIN)
+                .addApi(Games.API).addScope(Games.SCOPE_GAMES)
+                .build();
+
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
             // success! we have an accelerometer
@@ -57,6 +69,25 @@ public class AndroidAccelerometer extends Activity
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
 
     }
+    private boolean isSignedIn() {
+        return (mGoogleApiClient != null && mGoogleApiClient.isConnected());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("aaaaaa", "onStart(): connecting");
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
 
     public void initializeViews() {
         currentZ = (TextView) findViewById(R.id.currentZ);
@@ -143,6 +174,20 @@ public class AndroidAccelerometer extends Activity
     }
 
 
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.d("Success!!", "onStop(): disconnecting");
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.d("ffffffuuuuuuuuuu", connectionResult.toString());
+    }
 }
 
     /** Called when the user clicks the Send button */
@@ -153,5 +198,4 @@ public class AndroidAccelerometer extends Activity
 //        intent.putExtra(EXTRA_MESSAGE, message);
 //        startActivity(intent);
 //    }
-//}
 
