@@ -46,6 +46,12 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
 
     public Vibrator v;
 
+    public AndroidAccelerometer() {
+        start = true;
+        timestamp = 0;
+        v0 = 0;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,48 +125,69 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
 
     }
 
+    boolean start;
+    long timestamp;
+    double v0;
+    double[] gravity = new double[3];
+    double[] linear_acceleration = new double[3];
+    final double alpha = .8;
+    double max = 0;
+
     @Override
     public void onSensorChanged(SensorEvent event) {
 
-        // clean current values
-        long startTime = System.currentTimeMillis();
-
         displayCleanValues();
-        // display the current x,y,z accelerometer values
         displayCurrentValues();
-        // display the max x,y,z accelerometer values
-        displayMaxValues();
-
-        // get the change of the x,y,z values of the accelerometer
         deltaZ = Math.abs(lastZ - event.values[2]);
-
-        // if the change is below 2, it is just plain noise
-        if (deltaZ < 2)
-            deltaZ = 0;
-
         lastZ = event.values[2];
 
-        if (deltaZ > 2.5)
-        {
-            long timeUp = System.currentTimeMillis() - startTime;
-            maxZ.setText(Float.toString(getMaxHeight(timeUp/1000f)));
+        gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
+        gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
+        gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
+
+        linear_acceleration[0] = event.values[0] - gravity[0];
+        linear_acceleration[1] = event.values[1] - gravity[1];
+        linear_acceleration[2] = event.values[2] - gravity[2];
+
+        double lin_acc = 0;
+        double norm = 0;
+        double maxH;
+        for (int i = 0; i < 3; ++i) {
+            norm += gravity[i]*gravity[i];
+        }
+        norm = Math.sqrt(norm);
+
+        for (int i = 0; i < 3; ++i) {
+            lin_acc += linear_acceleration[i] * gravity[i] / norm;
         }
 
-        float result = 2.0f;
-        if(isGameComplete){
-            sensorManager.unregisterListener(this);
-            mAchievementsProvider.Submit(result);
-            mLeaderboardsProvider.Submit(result);
+        if (Math.abs(lin_acc) > 5)
+        {
+            if (start) {
+                timestamp = System.currentTimeMillis();
+                v0 = lin_acc * 0.1;
+                start = false;
+            } else {
+                start = true;
+                long timeDelta = (System.currentTimeMillis() - timestamp) / 2;
+                maxH = getMaxHeight(v0, timeDelta);
+                maxZ.setText(Double.toString(maxH));
+                sensorManager.unregisterListener(this);
+                mAchievementsProvider.Submit(maxH);
+                mLeaderboardsProvider.Submit(maxH);
+                lin_acc = 0;
+
+            }
         }
     }
 
-    public float getMaxHeight(float timeUp)
+    public Double getMaxHeight(Double v0, long timeDelta)
     {
-        final float g = 9.81f;
-        //v = v0 + a*t; -> v0 = v - a*t, a = -g_z
-        float v0 = g * timeUp;  //
-        float h = v0 * timeUp + g * timeUp * timeUp / 2;
-        return h;
+        final double g = 9.81f;
+
+        Float time = timeDelta / 2000f;
+//        double vel = v0 * time;
+        return v0 * v0 / 2 * g;
     }
 
     public void displayCleanValues() {
@@ -180,10 +207,15 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         }
     }
     public void reset(View v) {
+        for (int i = 0; i < 3; ++i) {
+            linear_acceleration[i] = 0;
+            gravity[i] = 0;
+        }
         isGameComplete = false;
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         deltaZMax = 0.0f;
         maxZ.setText("0.0");
+//        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public void showAchievements(View v) {
@@ -244,5 +276,3 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         }
     }
 }
-
-

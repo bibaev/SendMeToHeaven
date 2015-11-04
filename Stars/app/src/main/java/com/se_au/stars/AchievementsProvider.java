@@ -24,7 +24,7 @@ public class AchievementsProvider {
         BrakePhone = "CgkI2ajnr7MaEAIQAg";
     }
 
-    public void Submit(float result){
+    public void Submit(double result){
         if(!mGoogleApiClient.isConnected()){
             return;
         }
