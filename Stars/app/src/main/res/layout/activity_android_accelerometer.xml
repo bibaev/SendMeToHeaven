@@ -34,7 +34,7 @@
         android:layout_marginBottom="10dp"
         android:text="SEND ME TO HEAVEN"
         android:textSize="35dp"
-        android:textColor="#E0E4CC" />
+        android:textColor="#031634" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -44,7 +44,7 @@
 
         android:text="Max Acceleration: X-Axis"
         android:textSize="15dp"
-        android:textColor="#E0E4CC" />
+        android:textColor="#031634" />
 
     <TextView
         android:id="@+id/maxX"
@@ -54,7 +54,7 @@
         android:layout_marginTop="10dp"
         android:text="0.0"
         android:textSize="20dp"
-        android:textColor="#E0E4CC" />
+        android:textColor="#031634" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -63,7 +63,7 @@
         android:layout_marginTop="20dp"
         android:text="Max Acceleration: Y-Axis"
         android:textSize="15dp"
-        android:textColor="#E0E4CC" />
+        android:textColor="#031634" />
 
     <TextView
         android:id="@+id/maxY"
@@ -73,7 +73,7 @@
         android:layout_marginTop="10dp"
         android:text="0.0"
         android:textSize="20dp"
-        android:textColor="#E0E4CC" />
+        android:textColor="#031634" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -82,7 +82,7 @@
         android:layout_marginTop="20dp"
         android:text="Max Acceleration: Z-Axis"
         android:textSize="15dp"
-        android:textColor="#E0E4CC" />
+        android:textColor="#031634" />
 
     <TextView
         android:id="@+id/maxZ"
@@ -92,7 +92,7 @@
         android:layout_marginTop="10dp"
         android:text="0.0"
         android:textSize="20dp"
-        android:textColor="#E0E4CC" />
+        android:textColor="#031634" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -102,7 +102,7 @@
         android:layout_marginTop="30dp"
         android:text="Current Acceleration:"
         android:textSize="20dp"
-        android:textColor="#E0E4CC" />
+        android:textColor="#031634" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -126,7 +126,7 @@
                 android:layout_marginTop="10dp"
                 android:text="Z-Axis"
                 android:textSize="15dp"
-                android:textColor="#E0E4CC" />
+                android:textColor="#031634" />
 
             <TextView
                 android:id="@+id/currentZ"
@@ -136,19 +136,45 @@
                 android:layout_marginTop="10dp"
                 android:text="0.0"
                 android:textSize="15dp"
-                android:textColor="#E0E4CC" />
+                android:textColor="#031634" />
         </LinearLayout>
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="83dp"
+        android:background="#69D2E7"
+        android:orientation="horizontal"
+        android:gravity="top|center">
+
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:text="Throw again!"
         android:id="@+id/button"
-        android:layout_gravity="center_horizontal"
-        android:textColor="#E0E4CC"
+        android:textColor="#031634"
         android:background="#A7DBD8"
         android:onClick="reset"/>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1" >
+    </View>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="High score"
+        android:id="@+id/hs_button"
+        android:layout_gravity="center_horizontal"
+        android:textColor="#031634"
+        android:background="#A7DBD8"
+        android:onClick="show_highscore"
+        />
+    </LinearLayout>
 
 
 </LinearLayout>

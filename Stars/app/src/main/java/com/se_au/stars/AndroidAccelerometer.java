@@ -177,6 +177,9 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         maxZ.setText("0.0");
     }
 
+    public void show_highscore(View v) {
+
+    }
 }
 
     /** Called when the user clicks the Send button */
