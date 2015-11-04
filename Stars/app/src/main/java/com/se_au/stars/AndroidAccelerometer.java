@@ -13,16 +13,12 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.plus.Plus;
-import com.se_au.stars.R;
 
 public class AndroidAccelerometer extends Activity implements SensorEventListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -35,9 +31,12 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
     private SensorManager sensorManager;
     private Sensor accelerometer;
 
+    private boolean isGameComplete;
+    private AchievementsProvider mAchievementsProvider;
+    private LeaderboardsProvider mLeaderboardsProvider;
+
     private float deltaZMax = 0;
     private float deltaZ = 0;
-    private float vibrateThreshold = 0;
     private TextView currentZ, maxZ;
 
     public Vibrator v;
@@ -48,22 +47,23 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         setContentView(R.layout.activity_android_accelerometer);
         initializeViews();
 
+        isGameComplete = false;
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Plus.API).addScope(Plus.SCOPE_PLUS_LOGIN)
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES)
                 .build();
-
+        mAchievementsProvider = new AchievementsProvider(mGoogleApiClient);
+        mLeaderboardsProvider = new LeaderboardsProvider(mGoogleApiClient);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
             // success! we have an accelerometer
-
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-            vibrateThreshold = accelerometer.getMaximumRange() / 2;
+            float vibrateThreshold = accelerometer.getMaximumRange() / 2;
         } else {
-            // fai! we dont have an accelerometer!
+            Log.d("WARN", "Device without accelerometer");
         }
 
 
@@ -139,6 +139,13 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
             long timeUp = System.currentTimeMillis() - startTime;
             maxZ.setText(Float.toString(getMaxHeight(timeUp/1000f)));
         }
+
+        float result = 2.0f;
+        if(isGameComplete){
+            sensorManager.unregisterListener(this);
+            mAchievementsProvider.Submit(result);
+            mLeaderboardsProvider.Submit(result);
+        }
     }
 
     public float getMaxHeight(float timeUp)
@@ -167,25 +174,30 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         }
     }
     public void reset(View v) {
+        isGameComplete = false;
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         deltaZMax = 0.0f;
         maxZ.setText("0.0");
     }
 
     public void showAchievements(View v) {
-        startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient),
-                0);
+        if(mGoogleApiClient.isConnected()) {
+            startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient), 0);
+        }
     }
 
     public void showLeaderboard(View v) {
-        startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient,
-                "CgkI2ajnr7MaEAIQAQ"), 0);
+        if(mGoogleApiClient.isConnected()) {
+            Log.d("INFO", mLeaderboardsProvider.GetGlobalLeaderboardId());
+            startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient,
+                    mLeaderboardsProvider.GetGlobalLeaderboardId()), 10);
+        }
     }
 
 
     @Override
     public void onConnected(Bundle bundle) {
         Log.d("Success!!", "onStop(): disconnecting");
-//        Games.Achievements.unlock(mGoogleApiClient, "CgkI2ajnr7MaEAIQBQ");
     }
 
     @Override
