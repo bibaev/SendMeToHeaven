@@ -134,7 +134,7 @@
         android:textColor="#031634"
         android:background="#A7DBD8"
         android:onClick="show_highscore"
-        />
+        android:clickable="true" />
     </LinearLayout>
 
     <LinearLayout
