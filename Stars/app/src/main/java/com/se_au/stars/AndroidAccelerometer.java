@@ -1,18 +1,16 @@
 package com.se_au.stars;
 
-//import java.util.Timer
-import android.content.IntentSender;
-import android.util.Log;
-import android.view.View;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -24,29 +22,31 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     public final static String EXTRA_MESSAGE = "com.se_au.stars.MESSAGE";
 
-    private HeightCalculator heightCalculator;
+    private HeightCalculator mHeightCalculator;
     private GoogleApiClient mGoogleApiClient;
-    private float lastZ;
 
     private AchievementsProvider mAchievementsProvider;
     private LeaderboardsProvider mLeaderboardsProvider;
 
-    private float deltaZMax = 0;
-    private float deltaZ = 0;
-    private TextView currentZ, maxZ;
-    private SensorManager sensorManager;
-    private Sensor accelerometer;
+    private double mMaximum;
+    private TextView mMaxTextView;
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
 
-    public Vibrator v;
+    public Vibrator mVibrator;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_android_accelerometer);
-        initializeViews();
+        mMaxTextView = (TextView) findViewById(R.id.maxZ);
 
-        heightCalculator = new HeightCalculator();
-        heightCalculator.Reset();
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mMaximum = 0x0;
+
+        mHeightCalculator = new HeightCalculator();
+        mHeightCalculator.Reset();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -55,21 +55,17 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
                 .build();
         mAchievementsProvider = new AchievementsProvider(mGoogleApiClient);
         mLeaderboardsProvider = new LeaderboardsProvider(mGoogleApiClient);
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
-        if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
-            // success! we have an accelerometer
-            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        if (mAccelerometer != null) {
+            // success! we have an mAccelerometer
+            mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
         } else {
-            Log.d("WARN", "Device without accelerometer");
+            Log.d(LogLevel.Warning, "Device without mAccelerometer");
         }
 
-        v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
-    }
-    private boolean isSignedIn() {
-        return (mGoogleApiClient != null && mGoogleApiClient.isConnected());
+        mVibrator = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
     }
 
     @Override
@@ -92,31 +88,30 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
-    double maxim = 0;
+
     @Override
     public void onSensorChanged(SensorEvent event) {
-        double result = heightCalculator.Calculate(event.values);
-        maxim = Math.max(result, maxim);
-        DisplayValue(maxim);
-        if (maxim > .001) {
-            sensorManager.unregisterListener(this);
+        double result = mHeightCalculator.Calculate(event.values);
+        mMaximum = Math.max(result, mMaximum);
+        DisplayValue(mMaximum);
+        if (mMaximum > .001) {
+            mSensorManager.unregisterListener(this);
             if (mAchievementsProvider.Submit(result)){
-                v.vibrate(50);
+                mVibrator.vibrate(50);
             }
+
             mLeaderboardsProvider.Submit(result);
         }
     }
 
-    boolean local = true;
     public void reset(View v) {
-        heightCalculator.Reset();
+        mHeightCalculator.Reset();
         Log.d(LogLevel.Info, "____________________________________________________");
-        maxim = 0;
-        deltaZMax = 0.0f;
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mMaximum = 0;
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    public void showAchievements(View v) {
+    public void onShowAchievements(View v) {
         try{
             startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient), 0);
         }
@@ -127,10 +122,10 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         }
     }
 
-    public void showLeaderboard(View v) {
+    public void onShowLeaderboard(View v) {
         try{
             startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient,
-                    mLeaderboardsProvider.GetGlobalLeaderboardId()), 10);
+                    mLeaderboardsProvider.GetGlobalLeaderboardId()), 0);
         }
         catch (Exception e){
             Log.d(LogLevel.Warning, "Cannot open Leaderboard");
@@ -177,11 +172,11 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         }
     }
 
-    private void initializeViews() {
-        maxZ = (TextView) findViewById(R.id.maxZ);
-    }
-
     private void DisplayValue(double value){
-        maxZ.setText(String.format("%.2f", value));
+        if(value >= 100f){
+            value = 99.99;
+        }
+
+        mMaxTextView.setText(String.format("%.2f", value));
     }
 }

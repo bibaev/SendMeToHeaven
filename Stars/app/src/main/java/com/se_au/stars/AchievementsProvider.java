@@ -17,6 +17,7 @@ public class AchievementsProvider {
         mGoogleApiClient = googleApiClient;
 
         // TODO: Доставать из ресурсов.
+
         AreYouCrazy = "CgkI2ajnr7MaEAIQBA";
         StartSmall = "CgkI2ajnr7MaEAIQBQ";
         WelcomeToTheClubId = "CgkI2ajnr7MaEAIQBg";
@@ -27,7 +28,7 @@ public class AchievementsProvider {
     public boolean Submit(double result) {
         boolean res = false;
         if(!mGoogleApiClient.isConnected()){
-            return res;
+            return false;
         }
         try {
             Games.Achievements.increment(mGoogleApiClient, UsainBolt, 1);
