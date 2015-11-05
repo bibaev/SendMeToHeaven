@@ -24,19 +24,10 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     public final static String EXTRA_MESSAGE = "com.se_au.stars.MESSAGE";
 
-    private static String LOG_INFO = "INFO";
-    private static String LOG_WARN = "WARN";
-    private static String LOG_ERROR = "ERROR";
-    private static String LOG_FATAL = "FATAL";
-
-    // Fragments
-//    WinFragment mWinFragment;
+    private HeightCalculator heightCalculator;
     private GoogleApiClient mGoogleApiClient;
     private float lastZ;
-    private SensorManager sensorManager;
-    private Sensor accelerometer;
 
-    private boolean isGameComplete;
     private AchievementsProvider mAchievementsProvider;
     private LeaderboardsProvider mLeaderboardsProvider;
 
@@ -46,19 +37,13 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
 
     public Vibrator v;
 
-    public AndroidAccelerometer() {
-        start = true;
-        timestamp = 0;
-        v0 = 0;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_android_accelerometer);
         initializeViews();
 
-        isGameComplete = false;
+        heightCalculator = new HeightCalculator();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -67,20 +52,17 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
                 .build();
         mAchievementsProvider = new AchievementsProvider(mGoogleApiClient);
         mLeaderboardsProvider = new LeaderboardsProvider(mGoogleApiClient);
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
             // success! we have an accelerometer
-            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-            float vibrateThreshold = accelerometer.getMaximumRange() / 2;
         } else {
             Log.d("WARN", "Device without accelerometer");
         }
 
-
         //initialize vibration
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
-
     }
     private boolean isSignedIn() {
         return (mGoogleApiClient != null && mGoogleApiClient.isConnected());
@@ -89,35 +71,17 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(LOG_INFO, "in onStart. Call connect()");
+        Log.d(LogLevel.Info, "in onStart. Call connect()");
         mGoogleApiClient.connect();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(LOG_INFO, "in onStop. Call disconnect()");
+        Log.d(LogLevel.Info, "in onStop. Call disconnect()");
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
-    }
-
-
-    public void initializeViews() {
-        currentZ = (TextView) findViewById(R.id.currentZ);
-        maxZ = (TextView) findViewById(R.id.maxZ);
-    }
-
-    //onResume() register the accelerometer for listening the events
-    protected void onResume() {
-        super.onResume();
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-    //onPause() unregister the accelerometer for stop listening the events
-    protected void onPause() {
-        super.onPause();
-        sensorManager.unregisterListener(this);
     }
 
     @Override
@@ -125,94 +89,24 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
 
     }
 
-    boolean start;
-    long timestamp;
-    double v0;
-    double[] gravity = new double[3];
-    double[] linear_acceleration = new double[3];
-    final double alpha = .8;
-    double max = 0;
-
     @Override
     public void onSensorChanged(SensorEvent event) {
-
-        displayCleanValues();
-        displayCurrentValues();
-        deltaZ = Math.abs(lastZ - event.values[2]);
-        lastZ = event.values[2];
-
-        gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
-        gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
-        gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
-
-        linear_acceleration[0] = event.values[0] - gravity[0];
-        linear_acceleration[1] = event.values[1] - gravity[1];
-        linear_acceleration[2] = event.values[2] - gravity[2];
-
-        double lin_acc = 0;
-        double norm = 0;
-        double maxH;
-        for (int i = 0; i < 3; ++i) {
-            norm += gravity[i]*gravity[i];
-        }
-        norm = Math.sqrt(norm);
-
-        for (int i = 0; i < 3; ++i) {
-            lin_acc += linear_acceleration[i] * gravity[i] / norm;
+        /* TODO: Не получится ли так, что мы получим новый результат прежде чем отпишемся
+        от событий сенсора? */
+        double result = heightCalculator.Calculate(event.values);
+        if(result < 0){
+            return;
         }
 
-        if (Math.abs(lin_acc) > 5)
-        {
-            if (start) {
-                timestamp = System.currentTimeMillis();
-                v0 = lin_acc * 0.1;
-                start = false;
-            } else {
-                start = true;
-                long timeDelta = (System.currentTimeMillis() - timestamp) / 2;
-                maxH = getMaxHeight(v0, timeDelta);
-                maxZ.setText(Double.toString(maxH));
-                sensorManager.unregisterListener(this);
-                mAchievementsProvider.Submit(maxH);
-                mLeaderboardsProvider.Submit(maxH);
-                lin_acc = 0;
-
-            }
-        }
+        DisplayValue(result);
+        //sensorManager.unregisterListener(this);
+        mAchievementsProvider.Submit(result);
+        mLeaderboardsProvider.Submit(result);
     }
 
-    public Double getMaxHeight(Double v0, long timeDelta)
-    {
-        final double g = 9.81f;
-
-        Float time = timeDelta / 2000f;
-//        double vel = v0 * time;
-        return v0 * v0 / 2 * g;
-    }
-
-    public void displayCleanValues() {
-        currentZ.setText("0.0");
-    }
-
-    // display the current x,y,z accelerometer values
-    public void displayCurrentValues() {
-        currentZ.setText(Float.toString(deltaZ));
-    }
-
-    // display the max x,y,z accelerometer values
-    public void displayMaxValues() {
-        if (deltaZ > deltaZMax) {
-            deltaZMax = deltaZ;
-            maxZ.setText(Float.toString(deltaZMax));
-        }
-    }
     public void reset(View v) {
-        for (int i = 0; i < 3; ++i) {
-            linear_acceleration[i] = 0;
-            gravity[i] = 0;
-        }
-        isGameComplete = false;
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        heightCalculator.Reset();
+        //sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         deltaZMax = 0.0f;
         maxZ.setText("0.0");
 //        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
@@ -223,7 +117,9 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
             startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient), 0);
         }
         catch (Exception e){
-            Log.d(LOG_INFO, "Cannot open Achievements");
+            Log.d(LogLevel.Warning, "Cannot open Achievements");
+            Log.d(LogLevel.Info, e.toString());
+            mGoogleApiClient.reconnect();
         }
     }
 
@@ -232,31 +128,32 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
             startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient,
                     mLeaderboardsProvider.GetGlobalLeaderboardId()), 10);
         }
-        catch (Exception ex){
-            Log.d(LOG_INFO, "Cannot open Leaderboard");
+        catch (Exception e){
+            Log.d(LogLevel.Warning, "Cannot open Leaderboard");
+            Log.d(LogLevel.Info, e.toString());
+            mGoogleApiClient.reconnect();
         }
     }
 
-
     @Override
     public void onConnected(Bundle bundle) {
-        Log.d(LOG_INFO, "onStop(): connected");
+        Log.d(LogLevel.Info, "onConnected");
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.d(LOG_WARN, "connection suspend");
+        Log.d(LogLevel.Error, "connection suspend");
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.d(LOG_INFO, "Can not connect: " + connectionResult.toString());
+        Log.d(LogLevel.Info, "Can not connect: " + connectionResult.toString());
 
         try {
-            Log.d(LOG_INFO, "Try auth");
+            Log.d(LogLevel.Info, "Try auth");
             connectionResult.startResolutionForResult(this, 0);
         } catch (IntentSender.SendIntentException e) {
-            Log.d(LOG_ERROR, "Auth failed");
+            Log.d(LogLevel.Error, "Auth failed");
         }
     }
 
@@ -265,14 +162,39 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         switch (resultCode) {
             case Activity.RESULT_OK:
                 // All required changes were successfully made
-                Log.d(LOG_INFO, "Result ok");
+                Log.d(LogLevel.Info, "Result ok");
                 break;
             case Activity.RESULT_CANCELED:
                 // The user was asked to change settings, but chose not to
-                Log.d(LOG_INFO, "Result not ok");
+                Log.d(LogLevel.Warning, "Result not ok");
                 break;
             default:
                 break;
+        }
+    }
+
+    private void initializeViews() {
+        maxZ = (TextView) findViewById(R.id.maxZ);
+    }
+
+    private void displayCleanValues() {
+        currentZ.setText("0.0");
+    }
+
+    private void DisplayValue(double value){
+        maxZ.setText(String.format("%.2f", value));
+    }
+
+    // display the current x,y,z accelerometer values
+    private void displayCurrentValues(double value) {
+        currentZ.setText(String.format("%.2f", value));
+    }
+
+    // display the max x,y,z accelerometer values
+    private void displayMaxValues() {
+        if (deltaZ > deltaZMax) {
+            deltaZMax = deltaZ;
+            maxZ.setText(Float.toString(deltaZMax));
         }
     }
 }
