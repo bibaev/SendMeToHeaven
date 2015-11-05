@@ -46,6 +46,7 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         initializeViews();
 
         heightCalculator = new HeightCalculator();
+        heightCalculator.Reset();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -55,6 +56,7 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         mAchievementsProvider = new AchievementsProvider(mGoogleApiClient);
         mLeaderboardsProvider = new LeaderboardsProvider(mGoogleApiClient);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
         if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
             // success! we have an accelerometer
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -90,32 +92,37 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
-
+    double maxim = 0;
     @Override
     public void onSensorChanged(SensorEvent event) {
         /* TODO: Не получится ли так, что мы получим новый результат прежде чем отпишемся
         от событий сенсора? */
         double result = heightCalculator.Calculate(event.values);
-        if(result < 0){
-            return;
+//        if(result < 0){
+//            return;
+//        }
+        maxim = Math.max(result, maxim);
+        DisplayValue(maxim);
+        if (maxim > .001) {
+            sensorManager.unregisterListener(this);
         }
-
-        DisplayValue(result);
-        sensorManager.unregisterListener(this);
-        mAchievementsProvider.Submit(result);
-        mLeaderboardsProvider.Submit(result);
+//        mAchievementsProvider.Submit(result);
+//        mLeaderboardsProvider.Submit(result);
     }
 
     boolean local = true;
     public void reset(View v) {
         heightCalculator.Reset();
+
+        Log.d(LogLevel.Info, "____________________________________________________");
+        maxim = 0;
         //sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         deltaZMax = 0.0f;
-        maxZ.setText("0.0");
-        local = !local;
-        if (local) {
-            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        }
+//        maxZ.setText("0.0");
+//        local = !local;
+//        if (local) {
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+//        }
     }
 
     public void showAchievements(View v) {
@@ -188,7 +195,7 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
     }
 
     private void DisplayValue(double value){
-        maxZ.setText(String.format("%.2f", value/30));
+        maxZ.setText(String.format("%.2f", value));
     }
 
     // display the current x,y,z accelerometer values
