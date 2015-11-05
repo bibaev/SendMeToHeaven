@@ -61,11 +61,11 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
             // success! we have an accelerometer
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+
         } else {
             Log.d("WARN", "Device without accelerometer");
         }
 
-        //initialize vibration
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
     }
     private boolean isSignedIn() {
@@ -95,34 +95,25 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
     double maxim = 0;
     @Override
     public void onSensorChanged(SensorEvent event) {
-        /* TODO: Не получится ли так, что мы получим новый результат прежде чем отпишемся
-        от событий сенсора? */
         double result = heightCalculator.Calculate(event.values);
-//        if(result < 0){
-//            return;
-//        }
         maxim = Math.max(result, maxim);
         DisplayValue(maxim);
         if (maxim > .001) {
             sensorManager.unregisterListener(this);
+            if (mAchievementsProvider.Submit(result)){
+                v.vibrate(50);
+            }
+            mLeaderboardsProvider.Submit(result);
         }
-//        mAchievementsProvider.Submit(result);
-//        mLeaderboardsProvider.Submit(result);
     }
 
     boolean local = true;
     public void reset(View v) {
         heightCalculator.Reset();
-
         Log.d(LogLevel.Info, "____________________________________________________");
         maxim = 0;
-        //sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         deltaZMax = 0.0f;
-//        maxZ.setText("0.0");
-//        local = !local;
-//        if (local) {
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-//        }
     }
 
     public void showAchievements(View v) {
@@ -190,24 +181,7 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         maxZ = (TextView) findViewById(R.id.maxZ);
     }
 
-    private void displayCleanValues() {
-        currentZ.setText("0.0");
-    }
-
     private void DisplayValue(double value){
         maxZ.setText(String.format("%.2f", value));
-    }
-
-    // display the current x,y,z accelerometer values
-    private void displayCurrentValues(double value) {
-        currentZ.setText(String.format("%.2f", value));
-    }
-
-    // display the max x,y,z accelerometer values
-    private void displayMaxValues() {
-        if (deltaZ > deltaZMax) {
-            deltaZMax = deltaZ;
-            maxZ.setText(Float.toString(deltaZMax));
-        }
     }
 }

@@ -24,17 +24,20 @@ public class AchievementsProvider {
         BrakePhone = "CgkI2ajnr7MaEAIQAg";
     }
 
-    public void Submit(double result){
+    public boolean Submit(double result) {
+        boolean res = false;
         if(!mGoogleApiClient.isConnected()){
-            return;
+            return res;
         }
-
         try {
             Games.Achievements.increment(mGoogleApiClient, UsainBolt, 1);
-            Games.Achievements.unlock(mGoogleApiClient, StartSmall);
-
-            if (result >= 1.0) {
+            if (result < .05){
+                Games.Achievements.unlock(mGoogleApiClient, StartSmall);
+                res = true;
+            }
+            if (result >= 1.) {
                 Games.Achievements.unlock(mGoogleApiClient, WelcomeToTheClubId);
+                res = true;
                 if (result >= 2.) {
                     Games.Achievements.unlock(mGoogleApiClient, BrakePhone);
                     if (result >= 20.) {
@@ -48,5 +51,6 @@ public class AchievementsProvider {
             Log.d("ERROR", "Achievement send failed.");
             Log.d("ERROR", e.toString());
         }
+        return res;
     }
 }

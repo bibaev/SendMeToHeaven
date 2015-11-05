@@ -88,8 +88,6 @@ public class HeightCalculator {
 
         double time = timeDelta / 1000.;
         return g * time * time /2;
-//        double vel = v0 * time;
-//        return v0 * v0 / (2 * g);
     }
 }
 
