@@ -1,76 +1,67 @@
 package com.se_au.stars;
 
-import android.os.Vibrator;
 import android.util.Log;
 
 import static java.lang.Math.abs;
 
 public class HeightCalculator {
-    private float lastZ;
+    private final static double g = 9.81;
 
-    private int start;
+    private int mIsGameStarted;
 
-    private double[] gravity = new double[3];
-    private double[] linear_acceleration = new double[3];
+    private double[] mGravity = new double[3];
+    private double[] mLinearAcceleration = new double[3];
+    private double mLinAcc = 0;
 
-    private long timestamp;
-    private double v0;
-
-    public Vibrator v;
+    private long mTimestamp;
 
     public HeightCalculator(){
-        start = 0;
-        timestamp = 0;
-        v0 = 0;
+        mIsGameStarted = 0;
+        mTimestamp = 0;
     }
-
-    double lin_acc = 0;
-
 
     public double Calculate(float[] values) {
         final double alpha = .8;
-        float deltaZ = abs(lastZ - values[2]);
-        lastZ = values[2];
 
-        gravity[0] = alpha * gravity[0] + (1 - alpha) * values[0];
-        gravity[1] = alpha * gravity[1] + (1 - alpha) * values[1];
-        gravity[2] = alpha * gravity[2] + (1 - alpha) * values[2];
+        mGravity[0] = alpha * mGravity[0] + (1 - alpha) * values[0];
+        mGravity[1] = alpha * mGravity[1] + (1 - alpha) * values[1];
+        mGravity[2] = alpha * mGravity[2] + (1 - alpha) * values[2];
 
-        linear_acceleration[0] = values[0] - gravity[0];
-        linear_acceleration[1] = values[1] - gravity[1];
-        linear_acceleration[2] = values[2] - gravity[2];
+        mLinearAcceleration[0] = values[0] - mGravity[0];
+        mLinearAcceleration[1] = values[1] - mGravity[1];
+        mLinearAcceleration[2] = values[2] - mGravity[2];
 
         double norm = 0;
         double maxH;
         for (int i = 0; i < 3; ++i) {
-            norm += gravity[i]*gravity[i];
+            norm += mGravity[i]* mGravity[i];
         }
         norm = Math.sqrt(norm);
         double lin_acc2 = 0;
         for (int i = 0; i < 3; ++i) {
-            lin_acc2 += linear_acceleration[i] * gravity[i] / norm;
+            lin_acc2 += mLinearAcceleration[i] * mGravity[i] / norm;
         }
-        lin_acc = alpha*lin_acc + (1-alpha)*lin_acc2;
-        if (abs(lin_acc) > 1)
-            Log.d(LogLevel.Info, String.valueOf(lin_acc));
-        if (start == 0) {
-            if (lin_acc > 1) {
-                timestamp = System.currentTimeMillis();
+        mLinAcc = alpha* mLinAcc + (1-alpha)*lin_acc2;
+        if (abs(mLinAcc) > 1)
+            Log.d(LogLevel.Info, String.valueOf(mLinAcc));
+        if (mIsGameStarted == 0) {
+            if (mLinAcc > 1) {
+                mTimestamp = System.currentTimeMillis();
             }
-            if (lin_acc < -1){
-                start = 1;
+            if (mLinAcc < -1){
+                mIsGameStarted = 1;
             }
         } else {
-            if (start == 1) {
-                long timeDelta = (System.currentTimeMillis() - timestamp) / 2;
-                if (Math.abs(lin_acc) < 1 && timeDelta > 0.1) {
-                    start = 2;
-                    maxH = getMaxHeight(v0, timeDelta);
-                    timestamp = System.currentTimeMillis();
+            if (mIsGameStarted == 1) {
+                long timeDelta = (System.currentTimeMillis() - mTimestamp) / 2;
+                if (Math.abs(mLinAcc) < 1 && timeDelta > 0.1) {
+                    mIsGameStarted = 2;
+                    maxH = getMaxHeight(timeDelta);
+                    mTimestamp = System.currentTimeMillis();
                     return abs(maxH);
                 }
-                if (lin_acc > 1){
-                    start = 0;
+                if (mLinAcc > 1){
+                    mIsGameStarted = 0;
                 }
             }
         }
@@ -79,15 +70,12 @@ public class HeightCalculator {
     }
 
     public void Reset(){
-        start = 0;
-        lin_acc=0;
+        mIsGameStarted = 0;
+        mLinAcc =0;
     }
 
-    private Double getMaxHeight(double v0, long timeDelta) {
-        final double g = 9.81;
-
+    private Double getMaxHeight(long timeDelta) {
         double time = timeDelta / 1000.;
         return g * time * time /2;
     }
 }
-
