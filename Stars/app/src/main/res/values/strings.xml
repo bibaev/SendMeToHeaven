@@ -10,5 +10,10 @@
     <string name="ok">OK</string>
     <string name="sign_in_to_upload_this_score">Sign in now to upload this score, save your achievements and share your progress with friends.</string>
     <string name="you_are_signed_in">You are signed in with Google.</string>
+    <string name="AppMainTitle">SEND ME TO HEAVEN</string>
+    <string name="DefaultValueHeight">0.0</string>
+    <string name="TryAgainButtonName">Try Again</string>
+    <string name="AchievementButtonName">Achievements</string>
+    <string name="LeaderboardButtonName">Leaderboard</string>
 </resources>
 
