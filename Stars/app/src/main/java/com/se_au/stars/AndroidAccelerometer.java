@@ -46,6 +46,7 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         initializeViews();
 
         heightCalculator = new HeightCalculator();
+        heightCalculator.Reset();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -102,7 +103,9 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
 //        }
         maxim = Math.max(result, maxim);
         DisplayValue(maxim);
-//        sensorManager.unregisterListener(this);
+        if (maxim > .001) {
+            sensorManager.unregisterListener(this);
+        }
 //        mAchievementsProvider.Submit(result);
 //        mLeaderboardsProvider.Submit(result);
     }
@@ -115,11 +118,11 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
         maxim = 0;
         //sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         deltaZMax = 0.0f;
-        maxZ.setText("0.0");
-        local = !local;
-        if (local) {
-//            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        }
+//        maxZ.setText("0.0");
+//        local = !local;
+//        if (local) {
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+//        }
     }
 
     public void showAchievements(View v) {

@@ -55,23 +55,23 @@ public class HeightCalculator {
             Log.d(LogLevel.Info, String.valueOf(lin_acc));
         if (start == 0) {
             if (lin_acc > 1) {
-//            return lin_acc;
-//            Log.d(LogLevel.Info, String.valueOf(lin_acc));
-
                 timestamp = System.currentTimeMillis();
-//                v0 = lin_acc * 0.15;
-//                start = 1;
             }
             if (lin_acc < -1){
                 start = 1;
             }
         } else {
-            if (start == 1 && System.currentTimeMillis() - timestamp > 0.1 && Math.abs(lin_acc) < 1){
-                start = 2;
+            if (start == 1) {
                 long timeDelta = (System.currentTimeMillis() - timestamp) / 2;
-                maxH = getMaxHeight(v0, timeDelta);
-//                Log.d(LogLevel.Info, String.valueOf(maxH));
-                return abs(maxH);
+                if (Math.abs(lin_acc) < 1 && timeDelta > 0.1) {
+                    start = 2;
+                    maxH = getMaxHeight(v0, timeDelta);
+                    timestamp = System.currentTimeMillis();
+                    return abs(maxH);
+                }
+                if (lin_acc > 1){
+                    start = 0;
+                }
             }
         }
 
@@ -80,10 +80,6 @@ public class HeightCalculator {
 
     public void Reset(){
         start = 0;
-//        for (int i = 0; i < 3; ++i) {
-//            linear_acceleration[i] = 0;
-//            gravity[i] = 0;
-//        }
         lin_acc=0;
     }
 
