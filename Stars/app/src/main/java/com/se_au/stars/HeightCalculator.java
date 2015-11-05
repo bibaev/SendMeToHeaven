@@ -8,7 +8,7 @@ import static java.lang.Math.abs;
 public class HeightCalculator {
     private float lastZ;
 
-    private boolean start;
+    private int start;
 
     private double[] gravity = new double[3];
     private double[] linear_acceleration = new double[3];
@@ -19,7 +19,7 @@ public class HeightCalculator {
     public Vibrator v;
 
     public HeightCalculator(){
-        start = true;
+        start = 0;
         timestamp = 0;
         v0 = 0;
     }
@@ -50,41 +50,47 @@ public class HeightCalculator {
         for (int i = 0; i < 3; ++i) {
             lin_acc2 += linear_acceleration[i] * gravity[i] / norm;
         }
-        lin_acc = alpha*lin_acc+ (1-alpha)*lin_acc2;
-
-        Log.d(LogLevel.Info, String.valueOf(norm));
+        lin_acc = alpha*lin_acc + (1-alpha)*lin_acc2;
         if (abs(lin_acc) > 1)
-        {
+            Log.d(LogLevel.Info, String.valueOf(lin_acc));
+        if (start == 0) {
+            if (lin_acc > 1) {
 //            return lin_acc;
 //            Log.d(LogLevel.Info, String.valueOf(lin_acc));
-            if (start) {
+
                 timestamp = System.currentTimeMillis();
-//                v0 = lin_acc * 0.1;
-                start = false;
-            } else {
-                start = true;
+//                v0 = lin_acc * 0.15;
+//                start = 1;
+            }
+            if (lin_acc < -1){
+                start = 1;
+            }
+        } else {
+            if (start == 1 && System.currentTimeMillis() - timestamp > 0.1 && Math.abs(lin_acc) < 1){
+                start = 2;
                 long timeDelta = (System.currentTimeMillis() - timestamp) / 2;
                 maxH = getMaxHeight(v0, timeDelta);
+//                Log.d(LogLevel.Info, String.valueOf(maxH));
                 return abs(maxH);
             }
         }
 
-        return 0.;
+        return 0;
     }
 
     public void Reset(){
-        start = true;
-        for (int i = 0; i < 3; ++i) {
-            linear_acceleration[i] = 0;
-            gravity[i] = 0;
-        }
+        start = 0;
+//        for (int i = 0; i < 3; ++i) {
+//            linear_acceleration[i] = 0;
+//            gravity[i] = 0;
+//        }
         lin_acc=0;
     }
 
-    private Double getMaxHeight(Double v0, long timeDelta) {
-        final double g = 9.81f;
+    private Double getMaxHeight(double v0, long timeDelta) {
+        final double g = 9.81;
 
-        double time = timeDelta / 1000;
+        double time = timeDelta / 1000.;
         return g * time * time /2;
 //        double vel = v0 * time;
 //        return v0 * v0 / (2 * g);

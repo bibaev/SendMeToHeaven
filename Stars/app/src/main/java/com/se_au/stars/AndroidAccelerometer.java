@@ -110,6 +110,8 @@ public class AndroidAccelerometer extends Activity implements SensorEventListene
     boolean local = true;
     public void reset(View v) {
         heightCalculator.Reset();
+
+        Log.d(LogLevel.Info, "____________________________________________________");
         maxim = 0;
         //sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         deltaZMax = 0.0f;
